@@ -41,7 +41,7 @@ jobs:
         with:
           image-ref: ${{ env.IMAGE }}:ci
           format: template
-          template: "@/contrib/html.tpl"
+          template: "https://github.com/aquasecurity/trivy/raw/main/contrib/html.tpl"
           output: trivy-report.html
           exit-code: "0"
 
