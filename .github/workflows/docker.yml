@@ -2,7 +2,7 @@ name: Docker CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feature/*"]
     tags: ["v*"]
   pull_request:
     branches: [main]
@@ -22,8 +22,19 @@ jobs:
           dockerfile: Dockerfile
           failure-threshold: warning
 
-      - name: Build de l'image
-        run: docker build --build-arg APP_VERSION=ci -t ${{ env.IMAGE }}:ci .
+      # --- BONUS DOUAE : Configuration de Buildx et du Cache ---
+      - name: Configuration de Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build de l'image avec Cache GitHub Actions
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          load: true
+          tags: ${{ env.IMAGE }}:ci
+          build-args: APP_VERSION=ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Tests dans le conteneur
         run: docker run --rm ${{ env.IMAGE }}:ci python -m unittest -v
@@ -94,10 +105,15 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=raw,value=latest
 
-      - name: Build et push
+      - name: Configuration de Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build et push avec Cache
         uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           build-args: APP_VERSION=${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
