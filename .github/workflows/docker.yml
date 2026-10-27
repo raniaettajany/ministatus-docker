@@ -70,7 +70,8 @@ jobs:
           vuln-type: library
           ignore-unfixed: true
           exit-code: "1"
-          publish:
+
+  publish:
     needs: build-scan
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
