@@ -1,11 +1,11 @@
 # --- Étape 1 : Builder (Installation des dépendances) ---
-FROM python:3.11-slim AS builder
+FROM python:3.15-slim AS builder
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --user --no-cache-dir -r requirements.txt
 
 # --- Étape 2 : Image Finale (Légère et sécurisée) ---
-FROM python:3.11-slim
+FROM python:3.15-slim
 WORKDIR /app
 
 # Création d'un utilisateur non-root (Sécurité)
